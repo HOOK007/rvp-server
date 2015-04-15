@@ -1,4 +1,4 @@
-class XqlUser:
+class RVPUser:
     def __init__(self, username, addr, other=None):
         self.username = username
         self.tcpAddr = addr
