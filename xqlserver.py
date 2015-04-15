@@ -1,14 +1,13 @@
-import select,Queue,socket,thread,threading,sys,time,json
-import xqluser
+# coding: utf-8
+import select
+import Queue
+import socket
+# import thread
+import threading
+import time
+import json
+from xqluser import XqlUser
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
-class MyEncoder(json.JSONEncoder):
-    def default(self,obj):
-#convert object to a dict
-        d = {}
-        d.update(obj.__dict__)
-        return d
 
 addrmap = {}
 namemap = {}
@@ -55,12 +54,6 @@ def msghandler(addr,jsonmsg,s,queues):
         messagelist['data'].append(msg)
 
 def userhandler():
-    server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    server.setblocking(False)
-    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR  , 1)
-    server_address= ('',9998)
-    server.bind(server_address)
-    server.listen(100)
 #sockets from which we except to read
     inputs = [server]
 #sockets from which we expect to write
@@ -91,64 +84,7 @@ def userhandler():
 #                namemap[user].player2 = 0
 #                namemap[user].player2addr = 0
 
-        for s in readable :
-            if s is server:
-                connection, client_address = s.accept()
-                #print "    connection from ", client_address
-                connection.setblocking(0)
-                inputs.append(connection)
-                message_queues[connection] = Queue.Queue()
-            else:
-                try:
-                    data = s.recv(1024)
-                except:
-                    data =''
-                if data :
-                    #print " received " , data , "from ",s.getpeername()
-                    msghandler(s.getpeername(),data,s,message_queues)
-                    if s not in outputs:
-                        outputs.append(s)
-                else:
-                    print "  closing", client_address
-                    if s in outputs :
-                        outputs.remove(s)
-                    if s in writable:
-                        writable.remove(s)
-                    for u in conmap:
-                        if conmap[u] == s:
-                            addr = namemap[u].udpaddr
-                            player2 = namemap[u].player2
-                            if player2:
-                                namemap[player2].player2addr = 0
-                                namemap[player2].player2 = 0
-                            if addr:
-                                addrstr = addr[0] + ':%d'%addr[1]
-                                del(addrmap[addrstr])
-                            del(namemap[u])
-                
-                    inputs.remove(s)
-                    s.close()
-                    #remove message queue 
-                    del message_queues[s]
-        for s in writable:
-            try:
-                next_msg = message_queues[s].get_nowait()
-            except Queue.Empty:
-                #print " " , s.getpeername() , 'queue empty'
-                outputs.remove(s)
-            else:
-#               print " sending " , next_msg , " to ", s.getpeername()
-                s.send(next_msg)
-                     
-        for s in exceptional:
-            print " exception condition on ", s.getpeername()
-            #stop listening for input on the connection
-            inputs.remove(s)
-            if s in outputs:
-                    outputs.remove(s)
-            s.close()
-            #Remove message queue
-            del message_queues[s]
+
 
 
 
