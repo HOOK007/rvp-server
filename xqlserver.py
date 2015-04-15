@@ -6,7 +6,6 @@ import socket
 import threading
 import time
 import json
-from xqluser import XqlUser
 
 
 addrmap = {}

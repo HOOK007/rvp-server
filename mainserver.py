@@ -59,7 +59,7 @@ class MainServer():
     def __init__(self):
         self.server = None
         self.clients = {}
-        self.inputs = [self.server]
+        self.inputs = []
         self.outputs = []
         self.timeout = 2
         self.META = {
@@ -69,7 +69,6 @@ class MainServer():
 
     def start_server(self):
         self.init_server()
+        self.inputs.append(self.server)
         while self.inputs:
             self.mainloop()
-
-
