@@ -1,5 +1,4 @@
 import json
-from encoder import MyEncoder
 
 
 class Client:

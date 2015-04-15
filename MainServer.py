@@ -58,7 +58,6 @@ class MainServer():
 
     def __init__(self):
         self.server = None
-        self.init_server()
         self.clients = {}
         self.inputs = [self.server]
         self.outputs = []
@@ -67,6 +66,9 @@ class MainServer():
             'slaves': {},
             'pairs': {},
         }
+
+    def start_server(self):
+        self.init_server()
         while self.inputs:
             self.mainloop()
 
