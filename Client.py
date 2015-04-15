@@ -3,34 +3,58 @@ from encoder import MyEncoder
 
 
 class Client:
-    def __init__(self, peername, connection):
+    def __init__(self, server, peername, connection):
         from Queue import Queue
         self.peername = peername
         self.connection = connection
+        self.udp_addr = None
         self.user = None
         self.msgs = Queue()
+        self.server = server
 
-    def handle_msg(self, server, raw_msg):
+    def handle_msg(self, raw_msg):
         msg = json.loads(raw_msg)
-        header = msg['header']
-        if header == 'register':
-            pass
-        elif header == 'unregister':
-            pass
-        elif header == 'get_slaves':
-            r_msg = self.get_slaves(server)
-        self.msgs.put_nowait(r_msg)
+        req = msg['req']
+        if req == 'register':
+            r_msg = self.register(msg)
+        elif req == 'unregister':
+            r_msg = self.unregister()
+        elif req == 'get_slaves':
+            r_msg = self.get_slaves()
+        else:
+            r_msg = {'resp': "error"}
+        self.msgs.put_nowait(json.dumps(r_msg))
 
-    def get_slaves(self, server):
-        return {'data': server.slaves}
+    def get_slaves(self):
+        return {
+            'resp': 'slaves',
+            'data': self.server.META['slaves']
+        }
+
+    def register(self, msg):
+        self.udp_addr = msg['address']
+        self.server.META['slaves'].append(msg['address'])
+        return {
+            'resp': 'register',
+            'ans': 'success',
+        }
+
+    def unregister(self):
+        self.server.META['slaves'].remove(self.udp_addr)
+        return {
+            'resp': 'unregister',
+            'ans': 'success',
+        }
 
     def send_msg(self):
         try:
             msg = self.msgs.get_nowait()
             self.connection.send(msg)
-        except:
+        except Exception, e:
+            print e
             print "send msg error"
 
     def clean(self):
-        pass
+        self.unregister()
+        self.connection.close()
 

@@ -9,7 +9,7 @@ class MainServer():
         connection.setblocking(0)
         self.inputs.append(connection)
         self.outputs.append(connection)
-        self.clients[client_address] = Client(client_address, connection)
+        self.clients[client_address] = Client(self, client_address, connection)
         print "new slave server from ", client_address
 
     def close_connection(self, s):
@@ -17,14 +17,16 @@ class MainServer():
         if s in self.outputs:
             self.outputs.remove(s)
         self.inputs.remove(s)
-        s.close()
+        # s.close()
+        client.clean()
         print "closing", client.peername
 
     def get_msg_from_client(self, s):
         client = self.clients[s.getpeername()]
         try:
             data = s.recv(1024)
-        except:
+        except Exception, e:
+            print e
             data = ''
         if data:
             print "receive ", data, "from ", client.peername
@@ -61,7 +63,10 @@ class MainServer():
         self.inputs = [self.server]
         self.outputs = []
         self.timeout = 2
-        self.META = {}
+        self.META = {
+            'slaves': {},
+            'pairs': {},
+        }
         while self.inputs:
             self.mainloop()
 
