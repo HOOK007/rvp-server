@@ -28,7 +28,7 @@ class MainServer():
             data = ''
         if data:
             print "receive ", data, "from ", client.peername
-            self.clients[client.peername].handle_msg(self, data)
+            self.clients[client.peername].handle_msg(self.META, data)
         else:
             self.close_connection(s)
 
@@ -61,6 +61,7 @@ class MainServer():
         self.inputs = [self.server]
         self.outputs = []
         self.timeout = 2
+        self.META = {}
         while self.inputs:
             self.mainloop()
 
