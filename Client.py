@@ -7,7 +7,7 @@ class Client:
         self.user = None
         self.msgs = Queue()
 
-    def handle_msg(self, msg):
+    def handle_msg(self, server, msg):
         pass
 
     def send_msg(self):
