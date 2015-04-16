@@ -42,7 +42,7 @@ class Client:
         try:
             self.server.META['slaves'].remove(self.udp_addr)
         except Exception, e:
-            print e
+            print e.message
         return {
             'resp': 'unregister',
             'ans': 'success',
@@ -53,8 +53,8 @@ class Client:
             msg = self.msgs.get_nowait()
             self.connection.send(msg)
         except Exception, e:
-            print e
-            print "send msg error"
+            print e.message
+            print "send msg error", msg
 
     def clean(self):
         self.unregister()
