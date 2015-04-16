@@ -63,7 +63,7 @@ class MainServer():
         self.outputs = []
         self.timeout = 2
         self.META = {
-            'slaves': {},
+            'slaves': [],
             'pairs': {},
         }
 

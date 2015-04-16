@@ -39,7 +39,10 @@ class Client:
         }
 
     def unregister(self):
-        self.server.META['slaves'].remove(self.udp_addr)
+        try:
+            self.server.META['slaves'].remove(self.udp_addr)
+        except Exception, e:
+            print e
         return {
             'resp': 'unregister',
             'ans': 'success',
