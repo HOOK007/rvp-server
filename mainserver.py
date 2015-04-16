@@ -30,7 +30,7 @@ class MainServer():
             data = ''
         if data:
             print "receive ", data, "from ", client.peername
-            self.clients[client.peername].handle_msg(self.META, data)
+            self.clients[client.peername].handle_msg(data)
         else:
             self.close_connection(s)
 

@@ -27,7 +27,7 @@ class Client:
     def get_slaves(self):
         return {
             'resp': 'slaves',
-            'data': self.server.META['slaves']
+            'slaves': self.server.META['slaves']
         }
 
     def register(self, msg):
@@ -51,10 +51,12 @@ class Client:
     def send_msg(self):
         try:
             msg = self.msgs.get_nowait()
+        except Exception, e:
+            return
+        try:
             self.connection.send(msg)
         except Exception, e:
             print e.message
-            print "send msg error", msg
 
     def clean(self):
         self.unregister()
