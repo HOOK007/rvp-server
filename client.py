@@ -13,7 +13,7 @@ class Client:
 
     def handle_msg(self, raw_msg):
         msg = json.loads(raw_msg)
-        req = msg['req']
+        req = msg['op']
         if req == 'register':
             r_msg = self.register(msg)
         elif req == 'unregister':
@@ -21,12 +21,12 @@ class Client:
         elif req == 'get_slaves':
             r_msg = self.get_slaves()
         else:
-            r_msg = {'resp': "error"}
+            r_msg = {'op': "error"}
         self.msgs.put_nowait(json.dumps(r_msg))
 
     def get_slaves(self):
         return {
-            'resp': 'slaves',
+            'op': 'slaves',
             'slaves': self.server.META['slaves']
         }
 
@@ -34,7 +34,7 @@ class Client:
         self.udp_addr = msg['address']
         self.server.META['slaves'].append(msg['address'])
         return {
-            'resp': 'register',
+            'op': 'register',
             'ans': 'success',
         }
 
@@ -44,7 +44,7 @@ class Client:
         except Exception, e:
             print e.message
         return {
-            'resp': 'unregister',
+            'op': 'unregister',
             'ans': 'success',
         }
 
